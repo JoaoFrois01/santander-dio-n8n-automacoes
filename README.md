@@ -275,8 +275,8 @@ Todos os certificados conquistados ao longo da formação Santander 2026 / DIO e
 ### Passo a Passo de Importação
 1. Clone este repositório:
    ```bash
-   git clone https://github.com/SEU-USUARIO/NOME-DO-REPOSITORIO.git
-   cd NOME-DO-REPOSITORIO
+   git clone https://github.com/JoaoFrois01/santander-dio-n8n-automacoes.git
+   cd santander-dio-n8n-automacoes
    ```
 2. Abra a interface web da sua instância do n8n.
 3. No menu lateral esquerdo, clique em **Workflows** e depois em **Add Workflow**.
@@ -300,7 +300,7 @@ Desenvolvido por **João Victor Fróis da Fonseca**
 Graduando em **Sistemas de Informação**
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/)
-[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/)
+[![GitHub](https://img.shields.io/badge/GitHub-JoaoFrois01-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/JoaoFrois01)
 [![E-mail](https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:jfrois07@gmail.com)
 
 ---

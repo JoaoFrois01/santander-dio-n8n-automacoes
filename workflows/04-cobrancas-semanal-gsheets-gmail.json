@@ -1,0 +1,488 @@
+{
+  "name": "Automação de Cobranças Semanal - Google Sheets e Gmail - Ativiadade DIO",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtHour": 10
+            }
+          ]
+        }
+      },
+      "id": "1fdd5f81-538d-4b99-8f2a-fa5c4bfc9f04",
+      "name": "Agendamento Semanal (10 AM)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        144,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "12AJSCmniLSCLthzIlQ553OXxPocHZMEcA78UXGruvgI",
+          "mode": "list",
+          "cachedResultName": "atividade Dio - IA - Cliente",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12AJSCmniLSCLthzIlQ553OXxPocHZMEcA78UXGruvgI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12AJSCmniLSCLthzIlQ553OXxPocHZMEcA78UXGruvgI/edit#gid=0"
+        },
+        "options": {}
+      },
+      "id": "00d12842-05a5-4003-b48a-afaf26308c6f",
+      "name": "GSheets: Obter Clientes",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        384,
+        384
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "mVthjIr8UVSxZozc",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1IJjwidEUVLB7nTWxK-oM3ui-EBtYpeyrHQnaGvwscB0",
+          "mode": "list",
+          "cachedResultName": "atividade Dio - IA - Cobranca",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IJjwidEUVLB7nTWxK-oM3ui-EBtYpeyrHQnaGvwscB0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IJjwidEUVLB7nTWxK-oM3ui-EBtYpeyrHQnaGvwscB0/edit#gid=0"
+        },
+        "options": {}
+      },
+      "id": "50818406-5459-44bb-9bad-da40754241dd",
+      "name": "GSheets: Obter Cobranças",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        384,
+        624
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "mVthjIr8UVSxZozc",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "CLIENTE",
+        "options": {}
+      },
+      "id": "d99d69fa-f2af-43f4-9208-e425bdabb4d2",
+      "name": "Merge: KeepMatching",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        624,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cond2",
+              "leftValue": "={{ $json.VENCIMENTO }}",
+              "rightValue": "={{ $today.format('yyyy-MM-dd') }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "beforeOrEquals"
+              }
+            },
+            {
+              "id": "f6406ee1-db7d-4a41-9443-e197d94ca598",
+              "leftValue": "={{ $json['OBS:'] }}",
+              "rightValue": "COBRANÇA REALIZADA !",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "f24dd814-2be2-4c0a-a601-696837395f1e",
+      "name": "Filter: Próximos 5 Dias",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        848,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1IJjwidEUVLB7nTWxK-oM3ui-EBtYpeyrHQnaGvwscB0",
+          "mode": "list",
+          "cachedResultName": "atividade Dio - IA - Cobranca",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IJjwidEUVLB7nTWxK-oM3ui-EBtYpeyrHQnaGvwscB0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IJjwidEUVLB7nTWxK-oM3ui-EBtYpeyrHQnaGvwscB0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "OBS:": "COBRANÇA REALIZADA !",
+            "CLIENTE": "={{ $json.CLIENTE }}"
+          },
+          "matchingColumns": [
+            "CLIENTE"
+          ],
+          "schema": [
+            {
+              "id": "CLIENTE",
+              "displayName": "CLIENTE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "TIPO DE PAGAMENTO",
+              "displayName": "TIPO DE PAGAMENTO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "VENCIMENTO",
+              "displayName": "VENCIMENTO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "OBS:",
+              "displayName": "OBS:",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "5d534640-524d-4f6e-b027-b546fd94411d",
+      "name": "GSheets: Atualizar OBS = OK",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1264,
+        240
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "mVthjIr8UVSxZozc",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "spreadsheet",
+        "title": "=Revisao_Cobrancas_{{ $today.format('yyyy-MM-dd') }}",
+        "sheetsUi": {
+          "sheetValues": [
+            {
+              "title": "Arquivo gerado"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0e68a621-73cc-41fa-9aab-a7308159c8a3",
+      "name": "GSheets: Criar Planilha de Revisão",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1280,
+        624
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "mVthjIr8UVSxZozc",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "cobranca@gmail.com",
+        "subject": "[AUTOMAÇÃO] Relatório Semanal de Cobranças a Vencer",
+        "message": "=<p>Olá Equipe de Cobrança,</p><p>Segue em anexo a planilha das cobranças que já venceram.</p><p>Status da planilha principal atualizado para <strong>OK</strong> na coluna OBS.</p>\n<p>Link: {{ $json.spreadsheetUrl }}</p>\n<Cliente com 'Nomes Sujos':{{ $('Aggregate').item.json.CLIENTE.toJsonString().replaceAll(',', '/n') }}</p>",
+        "options": {
+          "attachmentsUi": {
+            "attachmentsBinary": []
+          }
+        }
+      },
+      "id": "3f25a155-d0cd-44f6-a6c1-a64977c3027e",
+      "name": "Gmail: Enviar E-mail",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1520,
+        624
+      ],
+      "webhookId": "4c813cf4-d60c-47a3-b2d4-770c6dd89f5f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "FZu74kljIXINMgjr",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "reset": false
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        992,
+        288
+      ],
+      "id": "42a3069a-4953-499d-ba65-776efdafa0f2",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1504,
+        288
+      ],
+      "id": "a09221aa-9761-402d-b841-8f1432a7fdb4",
+      "name": "Wait",
+      "webhookId": "bfdb15e6-a419-43f5-9f6c-82f40f0ebe60"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "CLIENTE"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1040,
+        624
+      ],
+      "id": "4feee8e6-b299-4a0c-be62-cb4c5e638fc1",
+      "name": "Aggregate"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Agendamento Semanal (10 AM)": {
+      "main": [
+        [
+          {
+            "node": "GSheets: Obter Clientes",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "GSheets: Obter Cobranças",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GSheets: Obter Clientes": {
+      "main": [
+        [
+          {
+            "node": "Merge: KeepMatching",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GSheets: Obter Cobranças": {
+      "main": [
+        [
+          {
+            "node": "Merge: KeepMatching",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge: KeepMatching": {
+      "main": [
+        [
+          {
+            "node": "Filter: Próximos 5 Dias",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter: Próximos 5 Dias": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GSheets: Criar Planilha de Revisão": {
+      "main": [
+        [
+          {
+            "node": "Gmail: Enviar E-mail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GSheets: Atualizar OBS = OK": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "GSheets: Atualizar OBS = OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "GSheets: Criar Planilha de Revisão",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "184d4282-7e8c-4cf5-af17-67ee655dfb21",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8e6cf4a70c6186dba3c788d0162dfe68008e378ca4b3f4a00ce4a6dca3aa6600"
+  },
+  "nodeGroups": [],
+  "id": "4NLCHH31Ku4DH3Ly",
+  "tags": []
+}

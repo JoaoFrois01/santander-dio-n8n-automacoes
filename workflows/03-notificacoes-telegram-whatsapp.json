@@ -1,0 +1,344 @@
+{
+  "name": "Automação - Sistema de Notificações no Telegram e Whatsapp",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "4b39695c-07ca-4bce-8cf1-10872e9d6cd5",
+      "name": "Seg à Sex às 9AM"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1dftJRJ6XLfTbB2IafIwW4qrsKdbpviH8EPKlftUzG6M",
+          "mode": "list",
+          "cachedResultName": "Artigos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dftJRJ6XLfTbB2IafIwW4qrsKdbpviH8EPKlftUzG6M/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Artigos-Lista",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dftJRJ6XLfTbB2IafIwW4qrsKdbpviH8EPKlftUzG6M/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "STATUS",
+              "lookupValue": "Não Enviado"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        224,
+        0
+      ],
+      "id": "456e18d5-9c56-4d36-ba8b-c6ab606d94d0",
+      "name": "Obtém Artigos Não Enviados",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "mVthjIr8UVSxZozc",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        448,
+        0
+      ],
+      "id": "d4ae5d8d-ea2b-4eb5-aea6-69c41ef713d2",
+      "name": "Limitar em 1  Artigo (Primeiro)"
+    },
+    {
+      "parameters": {
+        "chatId": "-1004384409618",
+        "text": "=Título: **{{ $json['TÍTULO'] }}**\n\nDescrição: _{{ $json['DESCRIÇÃO'] }}_\n\nLink: {{ $json.URL }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        672,
+        0
+      ],
+      "id": "b41e45e2-ab4c-4fec-9ebc-da38240ca108",
+      "name": "Send a text message",
+      "webhookId": "bb25c72e-2e5f-48f5-9914-3bc08af48ba7",
+      "credentials": {
+        "telegramApi": {
+          "id": "QMm96ESwkr0A7dwP",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "a18e0b32-b779-4856-b002-29694471d3ac",
+              "leftValue": "={{ $json.ok }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        896,
+        0
+      ],
+      "id": "88188798-ed6c-4c8c-808d-3fa0942cf740",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1dftJRJ6XLfTbB2IafIwW4qrsKdbpviH8EPKlftUzG6M",
+          "mode": "list",
+          "cachedResultName": "Artigos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dftJRJ6XLfTbB2IafIwW4qrsKdbpviH8EPKlftUzG6M/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Artigos-Lista",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dftJRJ6XLfTbB2IafIwW4qrsKdbpviH8EPKlftUzG6M/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $('Obtém Artigos Não Enviados').item.json.row_number }}",
+            "STATUS": "Enviado"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "TÍTULO",
+              "displayName": "TÍTULO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "DESCRIÇÃO",
+              "displayName": "DESCRIÇÃO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "URL",
+              "displayName": "URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "STATUS",
+              "displayName": "STATUS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1152,
+        -144
+      ],
+      "id": "f376ef00-c1c8-4e95-b1fd-4c0fcd19477d",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "mVthjIr8UVSxZozc",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.uzapi.com.br/v0.0.93/854689524706802/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer SEU_TOKEN_UZAPI_AQUI"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"to\": \"5531999999999\",\n  \"type\": \"text\",\n  \"text\": {\n    \"preview_url\": false,\n    \"body\": \"*Artigo Novo*:\\n*Título*: {{ $('Limitar em 1  Artigo (Primeiro)').item.json[\"TÍTULO\"] }}\\n*Descrição*: {{ $('Limitar em 1  Artigo (Primeiro)').item.json['DESCRIÇÃO'] }}\\n\\n*Link*: {{ $('Limitar em 1  Artigo (Primeiro)').item.json.URL }}\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1152,
+        160
+      ],
+      "id": "4bab2dcb-2727-4064-88b3-49d30dad76b4",
+      "name": "Notifica o Whatsapp sobre o novo artigo identificado"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Seg à Sex às 9AM": {
+      "main": [
+        [
+          {
+            "node": "Obtém Artigos Não Enviados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtém Artigos Não Enviados": {
+      "main": [
+        [
+          {
+            "node": "Limitar em 1  Artigo (Primeiro)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limitar em 1  Artigo (Primeiro)": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Notifica o Whatsapp sobre o novo artigo identificado",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "9cf00f70-1fbf-442e-a2d6-3978e2db140c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8e6cf4a70c6186dba3c788d0162dfe68008e378ca4b3f4a00ce4a6dca3aa6600"
+  },
+  "nodeGroups": [],
+  "id": "Gdsb7IAkftVaLKDO",
+  "tags": []
+}

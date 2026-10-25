@@ -1,0 +1,449 @@
+{
+  "name": "Automação - Processos Seletivo",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "months",
+              "triggerAtDayOfMonth": 14,
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "3235eaef-651e-4967-91a7-a1cf123a6eaf",
+      "name": "Diparada dia 14/10/2026 às 9:00"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1_UVWH6KyW6nTC9Kn7f2Fv_YpouGZuhsp4S2bOc54AjQ/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Candidatos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_UVWH6KyW6nTC9Kn7f2Fv_YpouGZuhsp4S2bOc54AjQ/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        224,
+        0
+      ],
+      "id": "16bce1a6-4c15-43a8-9990-351e53c7a399",
+      "name": "Obter Candidatos",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "mVthjIr8UVSxZozc",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "6b51fcb7-cb7c-40cc-86a2-71d67a753a52",
+              "leftValue": "={{ $json[\"Anos de Experiência\"] }}",
+              "rightValue": 5,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            },
+            {
+              "id": "4d01a5fb-8d60-4bfc-a3e2-ba2413370569",
+              "leftValue": "={{ $json[\"Nível de Escolaridade\"] }}",
+              "rightValue": "Pós-Graduação",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        480,
+        0
+      ],
+      "id": "8d0e8978-fdd1-4644-8c3d-0f2b4e2e2a01",
+      "name": "Candidato Aprovado ?"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        768,
+        -96
+      ],
+      "id": "75889272-5bd8-4fb2-8759-6f560f1d2be4",
+      "name": "Para cada Candidato Aprovado..."
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1200,
+        -96
+      ],
+      "id": "8cf4d37b-a0f4-4942-98b1-6135504a497d",
+      "name": "Aguardar 5s",
+      "webhookId": "b220f591-2633-405c-8470-ace06e72a049"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json['E-mail'] }}",
+        "subject": "Aprovação PS - Empresa X",
+        "message": "=Olá, {{ $json.Nome.split(' ')[0] }}, parábens pela aprovação no nosso processo seletivo.<br>Estamos ansiososo para a sua chegada.\n\nAtenciosamente,\nEquipe RH",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1008,
+        -160
+      ],
+      "id": "b8cfa642-06f4-48ce-bda1-e0a4643c73d5",
+      "name": "Send a message",
+      "webhookId": "c16a8e3d-e7f7-463e-973d-7fd6f226b010",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "FZu74kljIXINMgjr",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        752,
+        208
+      ],
+      "id": "618da64d-0e9c-4eef-b121-3f105c6b9ea7",
+      "name": "Para cada Candidato Reprovado..."
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "Nomes:",
+        "include": "specifiedFields",
+        "fieldsToInclude": "Nome",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1824,
+        208
+      ],
+      "id": "622be625-696f-4635-aa14-721e4a26abdd",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1_UVWH6KyW6nTC9Kn7f2Fv_YpouGZuhsp4S2bOc54AjQ/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Candidatos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_UVWH6KyW6nTC9Kn7f2Fv_YpouGZuhsp4S2bOc54AjQ/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Nome": "={{ $json.Nome }}",
+            "Anos de Experiência": "={{ $json['Anos de Experiência'] }}",
+            "Nível de Escolaridade": "={{ $json['Nível de Escolaridade'] }}",
+            "E-mail": "={{ $json['E-mail'] }}",
+            "Situação": "Reprovado (a)"
+          },
+          "matchingColumns": [
+            "Nome"
+          ],
+          "schema": [
+            {
+              "id": "Nome",
+              "displayName": "Nome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Anos de Experiência",
+              "displayName": "Anos de Experiência",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Nível de Escolaridade",
+              "displayName": "Nível de Escolaridade",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "E-mail",
+              "displayName": "E-mail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Situação",
+              "displayName": "Situação",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1104,
+        176
+      ],
+      "id": "fcf15dd9-4b66-4a62-a93a-26ef69194d5c",
+      "name": "Atualizar os reprovados na planilha",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "mVthjIr8UVSxZozc",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1472,
+        208
+      ],
+      "id": "0e5651e4-823a-49db-840e-edfc29a35d77",
+      "name": "Aguardar 5s1",
+      "webhookId": "b220f591-2633-405c-8470-ace06e72a049"
+    },
+    {
+      "parameters": {
+        "sendTo": "rh@gmail.com",
+        "subject": "PS - Relatório Reprovados",
+        "message": "=Olá, equipe de RH,\nA seguir os nomes reprovados nos primeiros filtros do processo seletivo.\nNomes:\n{{ $json['Nomes:'].join('\\n') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2048,
+        208
+      ],
+      "id": "c40e751d-bdd2-4a8f-9488-14ba7eee78df",
+      "name": "Send a message1",
+      "webhookId": "7ba2482e-5d45-465e-b58c-88abdf1ad10e",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "FZu74kljIXINMgjr",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Diparada dia 14/10/2026 às 9:00": {
+      "main": [
+        [
+          {
+            "node": "Obter Candidatos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obter Candidatos": {
+      "main": [
+        [
+          {
+            "node": "Candidato Aprovado ?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Candidato Aprovado ?": {
+      "main": [
+        [
+          {
+            "node": "Para cada Candidato Aprovado...",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Para cada Candidato Reprovado...",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Para cada Candidato Aprovado...": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aguardar 5s": {
+      "main": [
+        [
+          {
+            "node": "Para cada Candidato Aprovado...",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Aguardar 5s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Para cada Candidato Reprovado...": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Atualizar os reprovados na planilha",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualizar os reprovados na planilha": {
+      "main": [
+        [
+          {
+            "node": "Aguardar 5s1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aguardar 5s1": {
+      "main": [
+        [
+          {
+            "node": "Para cada Candidato Reprovado...",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "8d46f9a3-9690-4dbb-ac5c-47384bfd4117",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8e6cf4a70c6186dba3c788d0162dfe68008e378ca4b3f4a00ce4a6dca3aa6600"
+  },
+  "nodeGroups": [],
+  "id": "VRzpBdGJxvhu3dtM",
+  "tags": []
+}
